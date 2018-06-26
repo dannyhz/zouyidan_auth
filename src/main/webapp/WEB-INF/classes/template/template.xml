@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<diffModel>
+	<baseFolder>C:/diff_tool</baseFolder>
+	<baseDbUrl><![CDATA[jdbc:oracle:thin:@gdcx08-scan:1521/GCE.PROD.DBSERVICE_APP]]></baseDbUrl>
+	<baseDbUser>e540766</baseDbUser>
+	<baseDbPassword>Wang0524</baseDbPassword>
+	<baseSchemas>GCE_AUDIT,GCE_META,GCE_TRANS,GCE_METRICS,GCE_MAINT</baseSchemas>
+
+	<diffDbUrl> <![CDATA[jdbc:oracle:thin:@hzpdl3209.it:1521:O09ISZ0]]> </diffDbUrl>
+	<diffDbUser>opgcep2</diffDbUser>
+	<diffDbPassword>opgcep2</diffDbPassword>
+    <diffSchemas>PROD_AUDIT:GCE_AUDIT,PROD_META:GCE_META,PROD_TRANS:GCE_TRANS,PROD_METRICS:GCE_METRICS,PROD_MAINT:GCE_MAINT</diffSchemas>
+
+ 	<diffItem>
+		<diffId>0</diffId>
+		<diffName>TableDifference</diffName>
+		<selectSql> <![CDATA[ select t.OWNER, t.TABLE_NAME  from dba_tables t 
+ 		 	where t.owner in 
+ 			 ( %schemas% )  
+ 			 and t.table_name not IN (SELECT QUEUE_TABLE FROM DBA_QUEUE_TABLES) AND t.TABLE_NAME NOT LIKE 'AQ$%' 
+ 			 and t.table_name not like 'SYS_IOT_OVER_%' 
+ 		 	 order by OWNER, TABLE_NAME  ]]>  
+		</selectSql>
+		<keyFields>owner, table_name</keyFields>
+		<toStringFields>owner, table_name</toStringFields>
+		<schemaFields>owner</schemaFields>
+		<sqlScriptFile>Table</sqlScriptFile>
+		<createTemplate></createTemplate>
+		<modifyTemplate></modifyTemplate>
+		<deleteTemplate></deleteTemplate>
+	</diffItem>
+
+	<diffItem>
+		<diffId>1</diffId>
+		<diffName>SequenceDiff</diffName>
+		<selectSql> <![CDATA[ select sequence_owner, sequence_name, order_flag, cache_size from dba_sequences 
+ 			where sequence_owner in ( %schemas% ) 
+ 			and sequence_name NOT LIKE 'AQ$%' ]]>  
+		</selectSql>
+		<keyFields>sequence_owner, sequence_name</keyFields>
+		<toStringFields>sequence_owner, sequence_name, order_flag, cache_size</toStringFields>
+		<schemaFields>sequence_owner</schemaFields>
+		<sqlScriptFile>Sequence</sqlScriptFile>
+		<createTemplate></createTemplate>
+		<modifyTemplate></modifyTemplate>
+		<deleteTemplate></deleteTemplate>
+	</diffItem>
+	
+	<diffItem>
+		<diffId>2</diffId>
+		<diffName>IndexDifference</diffName>
+		<selectSql> <![CDATA[ select i.owner, i.table_name, i.index_name, i.index_type, i.uniqueness,c.column_name, c.column_position from dba_indexes i join dba_ind_columns c on i.owner = c.index_owner and i.index_name = c.index_name 
+ 			where   
+ 			 i.table_name not IN (SELECT QUEUE_TABLE FROM DBA_QUEUE_TABLES) AND i.TABLE_NAME NOT LIKE 'AQ$%' 
+ 			 and i.owner IN ( %schemas% ) 
+ 			order by i.owner, i.table_name, i.index_name, c.column_position ]]>  
+		</selectSql>
+		<keyFields>owner, table_name, index_name, column_position, column_name</keyFields>
+		<toStringFields>owner, table_name, index_name, column_name, column_position </toStringFields>
+		<schemaFields>owner</schemaFields>
+		<sqlScriptFile>Index</sqlScriptFile>
+		<createTemplate></createTemplate>
+		<modifyTemplate></modifyTemplate>
+		<deleteTemplate></deleteTemplate>
+	</diffItem>
+
+	<diffItem>
+		<diffId>3</diffId>
+		<diffName>FieldsDifference</diffName>
+		<selectSql> <![CDATA[ select c.OWNER, c.TABLE_NAME, c.COLUMN_NAME, c.DATA_TYPE, c.DATA_LENGTH, c.DATA_PRECISION, c.DATA_SCALE, c.COLUMN_ID, c.DEFAULT_LENGTH,  c.DATA_DEFAULT, c.NULLABLE  from dba_tab_columns c, dba_tables t  
+ 			 where c.owner = t.owner and c.table_name = t.table_name and  
+ 			 c.owner in  
+ 			 ( %schemas% )  
+ 			 and c.table_name not IN (SELECT QUEUE_TABLE FROM DBA_QUEUE_TABLES) AND c.TABLE_NAME NOT LIKE 'AQ$%'  and c.table_name not like 'SYS_IOT_OVER_%' 
+ 			 order by c.OWNER, c.TABLE_NAME, c.COLUMN_NAME  ]]>  
+		</selectSql>
+		<keyFields>owner, table_name, COLUMN_NAME</keyFields>
+		<toStringFields>owner, table_name, COLUMN_NAME, DATA_TYPE, DATA_LENGTH, DATA_PRECISION </toStringFields>
+		<schemaFields>owner</schemaFields>
+		<sqlScriptFile>Field</sqlScriptFile>
+		<createTemplate></createTemplate>
+		<modifyTemplate></modifyTemplate>
+		<deleteTemplate></deleteTemplate>
+	</diffItem>
+	<diffItem>
+	<diffId>4</diffId>
+		<diffName>ViewDifference</diffName>
+		
+		<selectSql> <![CDATA[ select owner, view_name, text_length, text from dba_views v
+			where v.owner in (  %schemas% )  and v.view_name not like 'AQ$%'
+			order by 1, 2  ]]> 
+		</selectSql>
+		<keyFields>owner, view_name</keyFields>
+		<toStringFields>view_name, text</toStringFields>
+		<schemaFields>owner, text</schemaFields>
+		<sqlScriptFile>View</sqlScriptFile>
+		<createTemplate></createTemplate>
+		<modifyTemplate></modifyTemplate>
+		<deleteTemplate></deleteTemplate>
+	</diffItem>
+	
+	<diffItem>
+		<diffId>5</diffId>
+		<diffName>PackageDifference</diffName>
+		
+		<selectSql> <![CDATA[ SELECT o.owner, s.name, UPPER(s.text) FROM dba_source s join dba_objects o on s.name = o.object_name and s.type = o.object_type and s.owner = o.owner
+			where o.owner in (  %schemas% ) and o.object_type = 'PACKAGE' 
+			order by 1, 2, s.line  ]]> 
+		</selectSql>
+		<keyFields>owner, name</keyFields>
+		<toStringFields>name, line, text</toStringFields>
+		<schemaFields>owner</schemaFields>
+		<sqlScriptFile>PackageDifference</sqlScriptFile>
+		<createTemplate></createTemplate>
+		<modifyTemplate></modifyTemplate>
+		<deleteTemplate></deleteTemplate>
+	</diffItem>
+	
+	 <diffItem>
+		<diffId>6</diffId>
+		<diffName>PackageBodyDifference</diffName>
+		
+		<selectSql> <![CDATA[ SELECT o.owner, s.name, s.line, UPPER(s.text) FROM dba_source s join dba_objects o on s.name = o.object_name and s.type = o.object_type and s.owner = o.owner
+			where o.owner in (  %schemas% ) and o.object_type = 'PACKAGE BODY' 
+			order by 1, 2, s.line  ]]> 
+		</selectSql>
+		<keyFields>owner, name</keyFields>
+		<toStringFields>owner, name, line</toStringFields>
+		<schemaFields>owner</schemaFields>
+		<sqlScriptFile>PackageBodyDifference</sqlScriptFile>
+		<createTemplate></createTemplate>
+		<modifyTemplate></modifyTemplate>
+		<deleteTemplate></deleteTemplate>
+	</diffItem>
+	
+	<diffItem>
+		<diffId>7</diffId>
+		<diffName>TriggerDifference</diffName>
+		
+		<selectSql> <![CDATA[ SELECT o.owner, s.name, s.line, UPPER(s.text) FROM dba_source s join dba_objects o on s.name = o.object_name and s.type = o.object_type and s.owner = o.owner
+			where o.owner in (  %schemas% ) and o.object_type = 'TRIGGER' 
+			order by 1, 2, s.line  ]]> 
+		</selectSql>
+		<keyFields>owner, name</keyFields>
+		<toStringFields>owner, name, line, text</toStringFields>
+		<schemaFields>owner</schemaFields>
+		<sqlScriptFile>TriggerDifference</sqlScriptFile>
+		<createTemplate></createTemplate>
+		<modifyTemplate></modifyTemplate>
+		<deleteTemplate></deleteTemplate>
+	</diffItem>
+	
+	<diffItem>
+		<diffId>8</diffId>
+		<diffName>FunctionDifference</diffName>
+		
+		<selectSql> <![CDATA[ SELECT o.owner, s.name, s.line, UPPER(s.text) FROM dba_source s join dba_objects o on s.name = o.object_name and s.type = o.object_type and s.owner = o.owner
+			where o.owner in (  %schemas% ) and o.object_type = 'FUNCTION' 
+			order by 1, 2, s.line  ]]> 
+		</selectSql>
+		<keyFields>owner, name</keyFields>
+		<toStringFields>owner, name, line, text</toStringFields>
+		<schemaFields>owner</schemaFields>
+		<sqlScriptFile>FunctionDifference</sqlScriptFile>
+		<createTemplate></createTemplate>
+		<modifyTemplate></modifyTemplate>
+		<deleteTemplate></deleteTemplate>
+	</diffItem>
+	
+	<diffItem>
+		<diffId>9</diffId>
+		<diffName>ProcedureDifference</diffName>
+		
+		<selectSql> <![CDATA[ SELECT o.owner, s.name, s.line, UPPER(s.text) FROM dba_source s join dba_objects o on s.name = o.object_name and s.type = o.object_type and s.owner = o.owner
+			where o.owner in (  %schemas% ) and o.object_type = 'PROCEDURE' 
+			order by 1, 2, s.line  ]]> 
+		</selectSql>
+		<keyFields>owner, name</keyFields>
+		<toStringFields>owner, name, line, text</toStringFields>
+		<schemaFields>owner</schemaFields>
+		<sqlScriptFile>ProcedureDifference</sqlScriptFile>
+		<createTemplate></createTemplate>
+		<modifyTemplate></modifyTemplate>
+		<deleteTemplate></deleteTemplate>
+	</diffItem>
+	
+	<diffItem>
+		<diffId>10</diffId>
+		<diffName>QueueDifference</diffName>
+		
+		<selectSql> <![CDATA[ select OWNER,  NAME, QUEUE_TABLE from dba_queues where owner in (  %schemas% ) AND QUEUE_TYPE = 'NORMAL_QUEUE'
+			order by 1, 2  ]]> 
+		</selectSql>
+		<keyFields>owner, name</keyFields>
+		<toStringFields>OWNER,  NAME, QUEUE_TABLE</toStringFields>
+		<schemaFields>owner</schemaFields>
+		<sqlScriptFile>QueueDifference</sqlScriptFile>
+		<createTemplate></createTemplate>
+		<modifyTemplate></modifyTemplate>
+		<deleteTemplate></deleteTemplate>
+	</diffItem>
+	
+    <diffItem>
+           <diffId>11</diffId>
+           <diffName>SynonymDifference</diffName>
+           <selectSql> <![CDATA[ select distinct t.table_owner, t.table_name, o.object_type, t.owner, t.SYNONYM_NAME 
+       from dba_synonyms t join dba_objects o 
+on t.table_owner = o.owner and t.table_name = o.object_name
+                 where t.owner in
+                  ( %schemas% ) 
+                   and t.table_name not IN (SELECT QUEUE_TABLE FROM DBA_QUEUE_TABLES) AND t.TABLE_NAME NOT LIKE 'AQ$%'  and t.table_name not like 'SYS_IOT_OVER_%'
+                  order by table_owner, table_name, object_type  ]]> 
+           </selectSql>
+           <keyFields>table_owner, table_name, object_type, owner, SYNONYM_NAME</keyFields>
+           <toStringFields>table_owner, table_name, object_type, owner, SYNONYM_NAME</toStringFields>
+           <schemaFields>owner, table_owner</schemaFields>
+           <sqlScriptFile>Synonym</sqlScriptFile>
+           <createTemplate></createTemplate>
+           <modifyTemplate></modifyTemplate>
+           <deleteTemplate></deleteTemplate>
+     </diffItem>
+</diffModel>

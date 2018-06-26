@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+  http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd" >
+  
+  <context:component-scan base-package="com.zyd.controller,com.zyd.service"/>
+  <context:component-scan base-package="cn.evun.sweet.auth.controller,cn.evun.sweet.auth.service"/>
+  
+  <bean class="cn.evun.sweet.core.spring.SpringContext" lazy-init="false" />
+  
+  <!-- 配置mvc各工作单元 -->
+	<mvc:annotation-driven >  
+	    <!--覆盖RequestMappingHandlerAdapter的messageConverters配置  -->
+        <mvc:message-converters  register-defaults="true"> 
+            <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">     
+	            <property name="supportedMediaTypes">  
+	                <list><value>text/html;charset=UTF-8</value>
+	                <value>text/plain;charset=UTF-8</value></list>
+	            </property>  
+	        </bean>  
+	        <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">    
+		    	<property name="supportedMediaTypes">  
+		            <list>  
+		                <value>application/json;charset=UTF-8</value>  
+		                <value>text/html;charset=UTF-8</value><!-- 避免IE出现下载JSON文件的情况 -->  
+		            </list>  
+		        </property>  
+		        <property name="features">  
+		            <list>  
+		                <value>QuoteFieldNames</value>  
+ 		                <!--<value>WriteDateUseDateFormat</value>  由view端根据需要格式化 -->
+		            </list>  
+		        </property>  
+		    </bean>     
+        </mvc:message-converters>  
+    </mvc:annotation-driven> 
+    
+</beans>

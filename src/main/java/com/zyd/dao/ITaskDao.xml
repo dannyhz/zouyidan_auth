@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.1//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyd.dao.ITaskDao">
+	
+	<sql id="all_columns">
+		    loanee_id,           
+		    apply_status
+	</sql>
+	
+	<insert id="insertTask" parameterType="com.zyd.model.TaskDO">
+		insert into
+			b_loan_application(<include refid="all_columns"/>)
+		values(
+		    #{loaneeId},          
+		    #{applyStatus}
+		)
+	</insert>
+	
+	<!-- 根据id 得到 申请 -->
+	<select id="queryApplicationById" parameterType="com.zyd.model.TaskDO" resultType="com.zyd.model.TaskDO">
+		select 
+			loan_application_id 
+		from
+			b_loan_application 
+		<where>
+			<if test="loanApplicationId != null ">
+				loan_application_id = #{loanApplicationId}
+			</if>
+		</where>
+		
+	</select>
+	
+	
+	<!-- 根据 状态 得到 申请记录列表 -->
+	<select id="queryLoanApplicationByStatus" parameterType="com.zyd.model.TaskDO" resultType="com.zyd.model.TaskDO">
+		select 
+			a.loan_application_id, a.loanee_id, a.apply_status, a.salesman_id, a.product_id, p.product_name, t.template_code 
+		from
+			b_loan_application a left join b_product p on a.product_id = p.product_id  
+			left join b_product_process_template t on p.process_template_id = t.process_template_id  
+		<where>
+			<if test="applyStatus != null ">
+				a.apply_status = 'COMMIT'
+			</if>
+		</where>
+		
+	</select>
+	
+	
+	<!-- 判断是否存在 -->
+	<select id="isExist" parameterType="com.zyd.model.TaskDO" resultType="int">
+		select 
+			count(*)
+		from
+			b_loan_application 
+		<where>
+			<if test="personId != null ">
+				apply_person_id = #{personId}
+			</if>
+			
+		</where>
+		
+	</select>
+	
+</mapper>

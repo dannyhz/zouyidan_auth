@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.1//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyd.dao.ISalesmanDao">
+	
+	<sql id="all_columns">
+		salesman_id,
+		user_id,
+		id_no, 
+		id_type, 
+		status, 
+		phone_no, 
+		memo,	
+		channel_id, 
+		register_date, 
+		profession,
+		email
+	</sql>
+	
+	<insert id="insertSalesman" parameterType="com.zyd.model.SalesmanDO">
+		insert into
+			salesman(id_no, 
+					id_type, 
+					status, 
+					phone_no, 
+					channel_id, 
+					register_date, 
+					profession,
+					contact_address,
+					email,
+					memo)
+		values(
+		 	#{idNo},          
+		    #{idType},
+		    #{status},
+		    #{phoneNo},
+		    #{channelId},
+		    #{registerDate},
+		    #{profession},
+		    #{contactAddress},
+		    #{email},
+		    #{memo}
+		)
+	
+	</insert>
+	
+	<insert id="update" parameterType="com.zyd.model.SalesmanDO">
+		update 
+			salesman
+			<set>
+				<if test="idNo != null">  id_no = #{idNo}, </if>
+				<if test="idType != null">  id_type = #{idType}, </if>
+				<if test="status != null and status != ''">  status = #{status}, </if>
+				<if test="phoneNo != null and phoneNo != ''">  phone_no = #{phoneNo}, </if>
+				<if test="channelId != null ">  channel_id = #{channelId}, </if>
+				<if test="profession != null and profession != ''">  profession = #{profession}, </if>
+				<if test="contactAddress != null and contactAddress != ''">  contact_address = #{contactAddress}, </if>
+				<if test="email != null and email != ''">  email = #{email}, </if>
+				<if test="memo != null  and memo != ''">  memo = #{memo}, </if>
+				<if test="lastUpdatedAt != null">  last_updated_at = #{lastUpdatedAt}, </if>
+			</set>
+			<where>
+				<if test ="salesmanId != null ">
+					and salesman_id = #{salesmanId} 
+				</if>
+				
+			</where> 		 
+	
+	</insert>
+	
+	<select id="queryList" parameterType="com.zyd.model.SalesmanDO" 
+								resultType="com.zyd.model.SalesmanDO">
+			SELECT 
+				s.salesman_id,
+				s.user_id,
+				u.user_name,
+				s.id_no, 
+				s.id_type, 
+				s.status, 
+				s.phone_no, 
+				s.memo,	
+				s.channel_id, 
+				s.register_date, 
+				s.profession,
+				s.email,
+				c.channel_name
+			from salesman s 
+			left join sys_user u on s.user_id = u.user_id 
+			left join b_channel_vendor c on s.channel_id = c.channel_id
+			<where>
+	          <if test="phoneNo != null and phoneNo != ''">
+	            AND s.phone_no = #{phoneNo}
+	          </if>
+	          <if test="channelId != null">
+	            AND s.channel_id = #{channelId}
+	          </if>
+	          <if test="userId != null">
+	            AND s.user_id = #{userId}
+	          </if>
+	          <if test="userName != null">
+	            AND u.user_name = #{userName}
+	          </if>
+		  	</where> 
+  	  </select>
+  
+</mapper>

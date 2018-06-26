@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
+
+<!-- 配置dataSource -->
+	<bean name="masterDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${zyd.jdbc.driverClassName}" />
+		<property name="url" value="${zyd.jdbc.url}"/>
+		<property name="username" value="${zyd.jdbc.username}"/>
+		<property name="password" value="${zyd.jdbc.password}"/>
+		<property name="initialSize" value="${zyd.initialSize}"/>
+		<property name="maxActive" value="${zyd.maxActive}"/>
+		<property name="minIdle" value="${zyd.minIdle}"/>
+		<property name="maxWait" value="${zyd.maxWait}"/>
+		<property name="timeBetweenEvictionRunsMillis" value="${zyd.timeBetweenEvictionRunsMillis}"/>
+		<property name="removeAbandoned" value="${zyd.removeAbandoned}"/>
+		<property name="removeAbandonedTimeout" value="${zyd.removeAbandonedTimeout}"/>
+		<property name="logAbandoned" value="${zyd.logAbandoned}"/>
+<!-- 		<property name="poolPreparedStatements" value="${mpayrecon.poolPreparedStatements}"/> -->
+<!-- 		<property name="maxPoolPreparedStatementPerConnectionSize" value="${mpayrecon.maxPoolPreparedStatementPerConnectionSize}"/> -->
+<!-- 		<property name="validationQuery" value="${mpayrecon.validationQuery}"/> -->
+<!-- 		<property name="testOnBorrow" value="${mpayrecon.testOnBorrow}"/> -->
+<!-- 		<property name="testOnReturn" value="${mpayrecon.testOnReturn}"/> -->
+<!-- 		<property name="testWhileIdle" value="${mpayrecon.testWhileIdle}"/> -->
+<!-- 		<property name="minEvictableIdleTimeMillis" value="${mpayrecon.minEvictableIdleTimeMillis}"/> -->
+<!-- 		<property name="filters" value="${mpayrecon.filters}"/> -->
+	</bean>
+
+	<!-- 配置sqlSessionFactory-->
+	<bean id="masterSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:config/mybatis.xml" />
+		<property name="dataSource" ref="masterDataSource"/>
+	</bean>
+	
+	<bean id="masterSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">  
+		<constructor-arg index="0" ref="masterSqlSessionFactory" /> 
+    </bean> 
+    
+    <!-- 只读mybatis操作接口扫描 -->
+<!-- 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"> -->
+<!-- 		<property name="basePackage" value="com.zyd.dao" /> -->
+<!-- 		<property name="sqlSessionFactoryBeanName" value="masterSqlSessionFactory" /> -->
+<!-- 	</bean>  -->
+	<bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+  		<!-- 统一规范需要扫描的DAO接口的位置 -->
+  		<property name="basePackage" value="cn.evun.sweet.core.mybatis,cn/evun/**/dao,cn/jyc/**/dao,com.zyd.dao" />
+  		<!-- 多数据源情况下，需要配置该项 -->
+  		<property name="sqlSessionFactoryBeanName" value="masterSqlSessionFactory" />
+  		<property name="properties">
+	        <value>
+	            mappers=tk.mybatis.mapper.common.Mapper
+	        </value>
+	    </property>
+	</bean>
+</beans>

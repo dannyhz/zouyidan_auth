@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<product id="mp_common" city="hangzhou" memo="每屏_杭州版">
+	<process sequence="1" id="first_review" operator="first_review_group" 
+			 scan_pre_stts = "COMMIT" wait_stts="WAIT_FR" pass_stts="PASS_FR" fail_stts="FAIL_FR"
+	 unit="group" memo="准入初评">
+	</process>
+	<process sequence="2" id="pub_check" operator="pub_check_group" 
+			 scan_pre_status = "PASS_FR" wait_stts="WAIT_PC" pass_stts="PASS_PC" fail_stts="FAIL_PC"
+	unit="group" memo="电核"></process>
+	<process sequence="5" id="pub_check_verify" operator="house_check_verify_group"  
+	 		 scan_pre_status = "PASS_HC" wait_stts="WAIT_HCV" pass_stts="PASS_HCV" fail_stts="FAIL_HCV"
+	unit="group"  memo="下户复审">
+	</process>
+	<process sequence="7" id="interview_sign" operator="product_owner_group" 
+			scan_pre_status = "PASS_POV" wait_stts="WAIT_IS" pass_stts="PASS_IS" fail_stts="FAIL_IS"
+	unit="group"  memo="产品方面签">
+	<process sequence="9" id="final_verify" operator="product_owner_group" 
+			scan_pre_status = "PASS_GT" wait_stts="WAIT_FV" pass_stts="PASS_FV" fail_stts="FAIL_FV"
+	unit="group"  memo="终审">
+	</process>
+</product>

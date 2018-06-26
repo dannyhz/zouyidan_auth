@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.1//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyd.dao.ISysAuthDao">
+	
+	<sql id="all_columns">
+		    auth_id,
+		    role_id,
+		    name,
+		    menu_id,
+		    parent_id,
+		    path,
+		    menu_code,
+		    auth_level           
+	</sql>
+	
+	<insert id="insertSysAuth" parameterType="com.zyd.model.auth.SysAuth">
+		insert into
+			sys_auth(<include refid="all_columns"/>)
+		values(
+		    #{authId},          
+		    #{roleId},
+		    #{name},
+		    #{menuId},
+		    #{parentId},
+		    #{path},
+		    #{menuCode},
+		    #{authLevel}
+		)
+	</insert>
+	
+	<delete id="deleteAuthByRole" parameterType="com.zyd.model.auth.SysRole">
+		delete from 
+			sys_auth 
+		where 
+		    role_id = #{roleId}
+	</delete>
+</mapper>

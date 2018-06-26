@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.1//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyd.dao.IAuthItemDao">
+	
+	<sql id="all_columns">
+		ITEM_ID, 
+		ITEM_TAB, 
+		ITEM_DESCRIPTION, 
+		ITEM_URL, 
+		ITEM_REQUESTMETHOD
+	</sql>
+	
+	<insert id="insertAuthItem" parameterType="com.zyd.model.auth.ItemDo">
+		insert into
+			sweet_auth_item(<include refid="all_columns"/>)
+		values(
+		 	#{itemId},          
+		    #{itemTab},
+		    #{itemDescription},
+		    #{itemUrl},
+		    #{itemRequestMethod}
+		)
+	
+	</insert>
+	
+	<delete id="deleteAuthByRole" parameterType="com.zyd.model.auth.SysRole">
+		delete from 
+			sys_auth 
+		where 
+		    role_id = #{roleId}
+	</delete>
+</mapper>

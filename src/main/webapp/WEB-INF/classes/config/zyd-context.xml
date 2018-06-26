@@ -1,0 +1,36 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+  
+<!--     <import resource="classpath*:config/*-config.xml"/> -->
+    
+<!--     <import resource="classpath*:config/*-tx.xml"/> -->
+<!--     <import resource="classpath*:config/*-bean.xml"/> -->
+    <import resource="classpath*:config/console-mvc.xml"/>
+    <import resource="classpath*:config/zyd-ds.xml"/> 
+    
+
+     <bean id="propertyConfigurer" class="com.zyd.common.PropertiesHolder" init-method="initPropertiesHolder">
+  		<property name="osName" value="#{systemProperties['os.name']}"/>
+ 		<property name="envs">
+ 			<map>
+ 				<entry key="windows" value="file:C:/PROJECT_SETTING_FILES/ZouYiDan/config_auth.properties"/>
+ 				<entry key="linux" value="file:/etc/_CONFIG/mpayscheduler/config.properties"/>
+ 			</map>
+ 		</property>
+    </bean> 
+    
+    
+    
+<!--        <bean id="propertyConfigurer" class="com.sunrun.mpos.common.core.PropertiesHolder"> -->
+<!--         <property name="locations"> -->
+<!--             <list> -->
+<!--                <value>classpath*:config/*.properties</value> -->
+<!--                 <value>file:C:/PROJECT_SETTING_FILES/MPAY/recon/config.properties</value>  -->
+<!--                     <value>file:/etc/_CONFIG/mpayrecon/config.properties</value> -->
+<!--             </list> -->
+<!--         </property> -->
+<!--     </bean> -->
+</beans>
