@@ -41,22 +41,29 @@ public class BizLoginController {
 	private ComponentService componentService;
 	
 	  @ResponseBody
-	  @RequestMapping(value = "/biz/helloWorld" , method = RequestMethod.GET)
-	  public String sayHello(String hello) {
+	  @RequestMapping(value = "/biz/checkPhoneNo" , method = RequestMethod.GET)
+	  public JsonResultDO chekPhoneNo(UserDO user) {
+		  JsonResultDO result = new JsonResultDO();
+		  if(userService.getUserByPhone(user.getPhone()) == null){
+			  result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, "success");  
+		      result.setSuccess(false);
+		      result.setStatusCode("0");
+		      result.setMessage("此手机号码账户不存在");
+		      return result;
+		  }
 		  
-		  System.out.println("---buy buy buy----");
-		  
-		  return null;
+		  result.setSuccess(true);
+		  return result;
 	  }	
 	
-	  @ResponseBody
-	  @RequestMapping("/biz/namepass.do") 
-	  public String login(HttpServletRequest request){ 
-	    String name = request.getParameter("name"); 
-	    String pass = request.getParameter("pass");
-	    System.out.println("name = " + name);
-	    return name;
-	  } 
+//	  @ResponseBody
+//	  @RequestMapping("/biz/namepass.do") 
+//	  public String login(HttpServletRequest request){ 
+//	    String name = request.getParameter("name"); 
+//	    String pass = request.getParameter("pass");
+//	    System.out.println("name = " + name);
+//	    return name;
+//	  } 
 	  
 	  
 	  //---------------------
@@ -65,7 +72,7 @@ public class BizLoginController {
 		  try {
 	            String checkId = UUIDGenerator.genUUID();
 	            CookieHelper cookieHelper = new CookieHelper();
-	            cookieHelper.setCookieName(cacheManager.ZYD_LOGIN_VERIFY_CODE);
+	            cookieHelper.setCookieName(CacheManager.ZYD_LOGIN_VERIFY_CODE);
 	            if (!NetUtils.isValidAddress(request.getServerName()) && !NetUtils.isLocalHost(request.getServerName())) {
 	                String domain = "." + resolveTopDomain(request.getServerName());
 	                cookieHelper.setCookieDomain(domain);

@@ -19,7 +19,7 @@ public class UserService {
 		userQuery.setPhone(phoneNo);
 		List<UserDO> userList = userDao.queryUser(userQuery);
 		if(userList.size() > 0){
-			userList.get(0);
+			return userList.get(0);
 		}
 		return null;
 	}
@@ -29,7 +29,7 @@ public class UserService {
 		userQuery.setUserLoginCode(userLoginCode);
 		List<UserDO> userList = userDao.queryUser(userQuery);
 		if(userList.size() > 0){
-			userList.get(0);
+			return userList.get(0);
 		}
 		return null;
 	}
