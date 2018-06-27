@@ -17,6 +17,8 @@
   
   <context:component-scan base-package="com.zyd.controller,com.zyd.service"/>
   <context:component-scan base-package="cn.evun.sweet.auth.controller,cn.evun.sweet.auth.service"/>
+  <context:component-scan base-package="cn.evun.sweet.core.cas"/>
+  
   
   <bean class="cn.evun.sweet.core.spring.SpringContext" lazy-init="false" />
   

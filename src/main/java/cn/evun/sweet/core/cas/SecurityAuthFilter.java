@@ -37,52 +37,52 @@ public class SecurityAuthFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		/*拦截URL、做登录校验 */
-		if(!inIgnoreURL(WebUtils.resolutionUrl(request.getRequestURI(), request.getContextPath()))){
-			LoginToken token = null;
-			try {
-				token = LoginCookieHelper.parseLoginToken(request);
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage());
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				return;
-			}
-			
-			if(onlineUserManager == null){
-				onlineUserManager = SpringContext.getBean(OnlineUserManager.class);
-			}
-			if(onlineUserManager.isLoser(token)){ //被异地登陆时
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				return;
-			}
-			
-			HttpSession sess = request.getSession(false);
-			if(sess != null){//redis的put方法才能修改最后活跃时间
-				Object data = CacheAccessor.doGet(R.cache.cache_region_session, sess.getId());
-				if(data != null){
-					CacheAccessor.doPut(R.cache.cache_region_session, sess.getId(), data);
-				}
-				ContextHolder.setSession((DistributedSession)sess);//绑定当前线程
-			}
-			
-			if(isApp(request)){
-				if(noPasswordLoginServ == null){
-					noPasswordLoginServ = SpringContext.getBean(NoPasswordLoginHandler.class);//需要在实际业务中继承AbstractNoPasswordLoginService
-				}
-				if(noPasswordLoginServ != null && token != null && sess == null){
-					noPasswordLoginServ.creatNewSessWithCookie(token, request, response);//免密登陆
-				}else if(sess == null){
-					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-					return;
-				}
-			}else if(sess == null){//未登录或过期
-				if(isAjax(request)){
-					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				}else {
-					response.sendRedirect(request.getContextPath() + SpringContext.getBean(SSOConfig.class).SESS_LOGINURL);
-				}	
-				return;
-			}
-		}
+//		if(!inIgnoreURL(WebUtils.resolutionUrl(request.getRequestURI(), request.getContextPath()))){
+//			LoginToken token = null;
+//			try {
+//				token = LoginCookieHelper.parseLoginToken(request);
+//			} catch (Exception e) {
+//				LOGGER.error(e.getMessage());
+//				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//				return;
+//			}
+//			
+//			if(onlineUserManager == null){
+//				onlineUserManager = SpringContext.getBean(OnlineUserManager.class);
+//			}
+//			if(onlineUserManager.isLoser(token)){ //被异地登陆时
+//				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//				return;
+//			}
+//			
+//			HttpSession sess = request.getSession(false);
+//			if(sess != null){//redis的put方法才能修改最后活跃时间
+//				Object data = CacheAccessor.doGet(R.cache.cache_region_session, sess.getId());
+//				if(data != null){
+//					CacheAccessor.doPut(R.cache.cache_region_session, sess.getId(), data);
+//				}
+//				ContextHolder.setSession((DistributedSession)sess);//绑定当前线程
+//			}
+//			
+//			if(isApp(request)){
+//				if(noPasswordLoginServ == null){
+//					noPasswordLoginServ = SpringContext.getBean(NoPasswordLoginHandler.class);//需要在实际业务中继承AbstractNoPasswordLoginService
+//				}
+//				if(noPasswordLoginServ != null && token != null && sess == null){
+//					noPasswordLoginServ.creatNewSessWithCookie(token, request, response);//免密登陆
+//				}else if(sess == null){
+//					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//					return;
+//				}
+//			}else if(sess == null){//未登录或过期
+//				if(isAjax(request)){
+//					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//				}else {
+//					response.sendRedirect(request.getContextPath() + SpringContext.getBean(SSOConfig.class).SESS_LOGINURL);
+//				}	
+//				return;
+//			}
+//		}
 		
 		filterChain.doFilter(request, response);
 	}

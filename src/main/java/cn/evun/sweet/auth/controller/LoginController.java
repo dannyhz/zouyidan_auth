@@ -41,9 +41,11 @@ import cn.evun.sweet.core.mybatis.common.SqlMapper;
  */
 @Controller
 public class LoginController extends LoginAndOutService {
+	
+	
 
-//	@Resource(name="sqlSession")
-//	private SqlSession sqlSession;
+	@Resource(name="sqlSession")
+	private SqlSession sqlSession;
 
 	//@Value("${user.login.requireverifycode}")
 	private boolean requiredVerifyCode = false;
@@ -54,8 +56,8 @@ public class LoginController extends LoginAndOutService {
 	//@Value("${user.login.lockinputcount}")
 	private int lockInputCount = 10;
 
-//	@Resource
-//	private AuthService authService;
+	@Resource
+	private AuthService authService;
 
 
 	@RequestMapping(value="/verifycode", method=RequestMethod.GET)
@@ -67,7 +69,7 @@ public class LoginController extends LoginAndOutService {
 	public void login(ModelMap model){
 	}
 
-	@RequestMapping(value="/dologin", method=RequestMethod.POST)
+	@RequestMapping(value="/dologin", method=RequestMethod.GET)
 	@ResponseBody
 	public JsonResultDO loginajax(HttpServletRequest request, HttpServletResponse response, String verifyCode, UserDo user){
 		JsonResultDO result = new JsonResultDO();
@@ -135,11 +137,11 @@ public class LoginController extends LoginAndOutService {
 		Map<String,Object> userMap =  null;
 		
 		if(userMap == null){
-			return new HashMap<String, Object>();
+			userMap = new HashMap<String, Object>();
 		}
 		
 		UserDo loginUser = (UserDo)userParam;
-		SqlMapper sqlExcutor = null;//new SqlMapper(sqlSession);
+		SqlMapper sqlExcutor = new SqlMapper(sqlSession);
 		try{
 			if(StringUtils.hasText(loginUser.getUserMobile())){
 				userMap = sqlExcutor.selectOne(getCheckUserByMobileSql(),loginUser.getUserMobile());
@@ -197,7 +199,7 @@ public class LoginController extends LoginAndOutService {
 		if(result.hasErrors()){
 			return null;
 		}else {
-			CacheAccessor.doEvict(R.cache.cache_login_errorinput+loginUser.getUserCode());//清除
+		//	CacheAccessor.doEvict(R.cache.cache_login_errorinput+loginUser.getUserCode());//清除
 			return userMap;
 		}
 

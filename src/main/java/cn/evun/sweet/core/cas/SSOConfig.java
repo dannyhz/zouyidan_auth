@@ -21,11 +21,11 @@ public class SSOConfig {
     @Value("${cas.logincookie.name}")
     public String LOGIN_COOKIENAME;
 
-    @Value("${cas.logincookie.secure}")
+    //@Value("${cas.logincookie.secure}")
     public boolean LOGIN_COOKIESECURE;
 
-    @Value("${cas.logincookie.maxage}")
-    public int LOGIN_COOKIEMAXAGE; //单位 秒
+    //@Value("${cas.logincookie.maxage}")
+    public int LOGIN_COOKIEMAXAGE = -1; //单位 秒
 
     @Value("${cas.session.ignoreurl}")
     public String SESS_IGNOREURL;
@@ -40,7 +40,7 @@ public class SSOConfig {
     public String SESS_EXPIRED;
 
     @Value("${cas.jwt.key:#{null}}")
-    public String JWT_KEY;
+    public String JWT_KEY="123";
 
     @Value("${cas.jwt.privatekeyfile:#{null}}")
     public String JWT_PRIVATE_KEYFILE;

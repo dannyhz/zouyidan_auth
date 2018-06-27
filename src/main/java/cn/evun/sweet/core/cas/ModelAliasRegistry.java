@@ -23,17 +23,17 @@ import org.springframework.stereotype.Component;
  * @author yangw
  * @since V1.0.0
  */
-@Component("modelAlias")
+//@Component("modelAlias")
 public class ModelAliasRegistry implements InitializingBean {
 
 	protected static final Logger LOGGER = LogManager.getLogger();
 
 	private final Map<String, Class<?>> TYPE_ALIASES = new HashMap<String, Class<?>>();
 
-	@Value("${aliases.modelpackages}")
+	//@Value("${aliases.modelpackages}")
 	private String modelAliasesPackage;
 	
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public <T> Class<T> resolveAlias(String string) {
 		try {
 			if (string == null) {

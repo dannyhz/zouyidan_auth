@@ -17,6 +17,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.zyd.cache.UserOnlinePool;
+
 import cn.evun.sweet.auth.dao.ItemMapper;
 import cn.evun.sweet.auth.dao.ItemPckMapper;
 import cn.evun.sweet.auth.dao.MenuMapper;
@@ -98,6 +100,7 @@ public class AuthService {
 	
 	/**菜单表的数据在缓存中的位置*/
 	public final static String menu_catche_key = "menu_catche";
+
 
 	/**
 	 * 访问权限的判断逻辑 
@@ -730,8 +733,12 @@ public class AuthService {
 				menu.getMenuId(),menu.getMenuName(), menu.getMenuHref(), menu.getMenuItemId());
 		/*更新缓存*/
 		List<MenuDo> menuList = getAllMenuRecord();
-		menuList.add(objAccessService.queryByIdWithRelation(MenuDo.class, menu.getMenuId()));
-		CacheAccessor.doPut(menu_catche_key, menuList);
+		MenuDo tmpMenu = new MenuDo();
+		tmpMenu.setMenuId(menu.getMenuId());
+		menuList.add(menuMapper.selectOne(tmpMenu));
+		//CacheAccessor.doPut(menu_catche_key, menuList);
+		UserOnlinePool.currentUserMenu.set(menuList);
+		
 	}
 	
 	/**

@@ -24,7 +24,7 @@ import cn.evun.sweet.core.exception.SweetException;
  * @author xiangli
  * @since V1.1.1
  */
-@Component
+//@Component
 public class DefaultJwtBuilder implements JwtBuilder {
 
     private io.jsonwebtoken.JwtBuilder jwtBuilder;
@@ -49,7 +49,7 @@ public class DefaultJwtBuilder implements JwtBuilder {
         return algoMap;
     }
 
-    @Autowired
+    //@Autowired
     public DefaultJwtBuilder(SSOConfig conf) {
         this.jwtBuilder = Jwts.builder();
 

@@ -18,15 +18,15 @@ public class OnlineUserManager{
 
 	protected static final Logger LOGGER = LogManager.getLogger();	
 	
-	@Value("${user.login.onlineCheck}")
-	private Boolean onlineCheck; 
+	//@Value("${user.login.onlineCheck}")
+	private Boolean onlineCheck = true; 
 	
 //	@Resource(name="redisTemplate")
 //	private HashOperations<String, String, Token> cacheOps;
 	
-	private HashMap<String, Token> cacheOps;
+	private HashMap<String, Token> cacheOps = new HashMap<String, Token>();
 	
-	@Autowired
+	//@Autowired
 	private SSOConfig ssoconfig;
 
 	/**

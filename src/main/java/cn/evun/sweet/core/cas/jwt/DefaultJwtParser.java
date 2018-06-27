@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
  * @author xiangli
  * @since V1.1.1
  */
-@Component
+//@Component
 public class DefaultJwtParser implements JwtParser {
 
     private io.jsonwebtoken.JwtParser jwtParser;
@@ -37,7 +37,7 @@ public class DefaultJwtParser implements JwtParser {
     /**用于 RS256 非对称加密签名的解密密钥*/
     private Key key;
 
-    @Autowired
+    //@Autowired
     public DefaultJwtParser(SSOConfig conf) {
         this.jwtParser = Jwts.parser();
         

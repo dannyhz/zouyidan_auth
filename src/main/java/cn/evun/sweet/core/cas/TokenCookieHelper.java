@@ -60,9 +60,10 @@ public abstract class TokenCookieHelper {
 			cookieHelper.setCookieDomain(domain);
 		}
 		
-		byte[] tokenByte = CryptUtil.encrypt(token.toJson().getBytes(), this.secretKey);
+		//byte[] tokenByte = CryptUtil.encrypt(token.toJson().getBytes(), this.secretKey);
+		byte[] tokenByte = token.toJson().getBytes();
 		/*Tomcat容器不支持cookie值中含一些汉字或特殊字符*/
-		cookieHelper.addCookie(response, URLEncoder.encode(CryptUtil.encryptBASE64(tokenByte),"UTF-8") );	
+		cookieHelper.addCookie(response, token.toJson());	
 	}
 	
 	/**
@@ -96,8 +97,8 @@ public abstract class TokenCookieHelper {
 			return null;
 		}
 		
-		byte[] tokenByte = CryptUtil.decrypt(CryptUtil.decryptBASE64(URLDecoder.decode(cookieValue, "UTF-8")), this.secretKey);
-		return (T)Token.json2Token(new String(tokenByte), this.tokenClass);
+		//byte[] tokenByte = CryptUtil.decrypt(CryptUtil.decryptBASE64(URLDecoder.decode(cookieValue, "UTF-8")), this.secretKey);
+		return (T)Token.json2Token(cookieValue, this.tokenClass);
 		
 	}
 	

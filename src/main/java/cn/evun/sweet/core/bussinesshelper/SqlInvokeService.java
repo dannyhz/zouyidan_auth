@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.ibatis.session.SqlSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,7 +67,8 @@ public class SqlInvokeService implements InitializingBean, ApplicationContextAwa
 
 		ModelMap model = new ModelMap();
 		model.addAllAttributes(ContextHolder.getRequest().getParameterMap());
-		DistributedSession stack = ContextHolder.currentSession();
+		//DistributedSession stack = ContextHolder.currentSession();
+		HttpSession stack = ContextHolder.currentSession();
 		if(stack != null){
 			model.addAttribute(R.session.user_info, stack.getAttribute(R.session.user_info));
 			model.addAttribute(R.session.tenant_info, stack.getAttribute(R.session.tenant_info));

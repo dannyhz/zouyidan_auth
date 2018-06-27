@@ -13,6 +13,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.zyd.cache.UserOnlinePool;
+
 import cn.evun.sweet.common.util.StringUtils;
 import cn.evun.sweet.common.util.VerifyCodeUtils;
 import cn.evun.sweet.common.util.network.NetUtils;
@@ -75,16 +77,18 @@ public abstract class LoginAndOutService {
 		}catch(Exception ex){
 			LOGGER.error("Failed to generate custom cookie[{}]. {}", token.getUserId(), ex.getMessage());
 		}
-		ContextHolder.setSession((DistributedSession)request.getSession(false));//绑定当前线程
+		//ContextHolder.setSession((DistributedSession)request.getSession(false));//绑定当前线程
+		HttpSession currentSession = request.getSession(false);
+		ContextHolder.setSession(currentSession);//绑定当前线程
 		
 		/*异地登陆时，需要剔除原登陆信息*/
-		LoginToken cacheToken = (LoginToken)onlineUserManager.getToken(token.getUserId());
-		if(cacheToken != null){
-			/*移除Session信息*/
-			CacheAccessor.doEvict(R.cache.cache_region_session, cacheToken.getSessionid());
-		}
-		onlineUserManager.replaceToken(token.getUserId(), token);
-		
+//		LoginToken cacheToken = (LoginToken)onlineUserManager.getToken(token.getUserId());
+//		if(cacheToken != null){
+//			/*移除Session信息*/
+//			CacheAccessor.doEvict(R.cache.cache_region_session, cacheToken.getSessionid());
+//		}
+//		onlineUserManager.replaceToken(token.getUserId(), token);
+		UserOnlinePool.tokenOnlinePool.put(currentSession.getId(), token);
 		/*加载用户信息及资源*/	
 		try{
 			loadUserResources(user, request.getSession());

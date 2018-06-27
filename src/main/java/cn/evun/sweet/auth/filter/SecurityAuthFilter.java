@@ -50,6 +50,8 @@ public class SecurityAuthFilter extends OncePerRequestFilter {
 		if(!inIgnoreURL(WebUtils.resolutionUrl(request.getRequestURI(), request.getContextPath()))){
 			LoginToken token = null;
 			try {
+				System.out.println("dfd"); 
+				
 				token = LoginCookieHelper.parseLoginToken(request);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
@@ -66,13 +68,13 @@ public class SecurityAuthFilter extends OncePerRequestFilter {
 			}
 			
 			HttpSession sess = request.getSession(false);
-			if(sess != null){//redis的put方法才能修改最后活跃时间
-				Object data = CacheAccessor.doGet(R.cache.cache_region_session, sess.getId());
-				if(data != null){
-					CacheAccessor.doPut(R.cache.cache_region_session, sess.getId(), data);
-				}
-				ContextHolder.setSession((DistributedSession)sess);//绑定当前线程
-			}
+//			if(sess != null){//redis的put方法才能修改最后活跃时间
+//				Object data = CacheAccessor.doGet(R.cache.cache_region_session, sess.getId());
+//				if(data != null){
+//					CacheAccessor.doPut(R.cache.cache_region_session, sess.getId(), data);
+//				}
+//				ContextHolder.setSession((DistributedSession)sess);//绑定当前线程
+//			}
 			
 			if(isApp(request)){ //不需要进入后台权限管理的情况
 				if(noPasswordLoginServ == null){

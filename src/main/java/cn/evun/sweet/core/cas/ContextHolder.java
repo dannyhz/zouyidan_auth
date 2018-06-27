@@ -1,6 +1,7 @@
 package cn.evun.sweet.core.cas;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.core.NamedThreadLocal;
 
@@ -14,6 +15,8 @@ public abstract class ContextHolder {
 
 	private static final ThreadLocal<DistributedSession> sessionHolder = new NamedThreadLocal<DistributedSession>("DistributedSession Inherit Holder");
 	
+	private static final ThreadLocal<HttpSession> standardSessionHolder = new NamedThreadLocal<HttpSession>("StandardSession Inherit Holder");
+	
 	private static final ThreadLocal<HttpServletRequest> requestHolder = new NamedThreadLocal<HttpServletRequest>("HttpServletRequest Inherit Holder");
 
 	private static final ThreadLocal<Token> tokenHolder = new NamedThreadLocal<Token>("LoginToken Inherit Holder");
@@ -23,8 +26,12 @@ public abstract class ContextHolder {
 		return tokenHolder.get();
 	}
 	
-	public static DistributedSession currentSession() {
+	public static DistributedSession currentDistributedSession() {
 		return sessionHolder.get();
+	}
+	
+	public static HttpSession currentSession() {
+		return standardSessionHolder.get();
 	}
 	
 	public static HttpServletRequest currentRequest() {
@@ -59,6 +66,14 @@ public abstract class ContextHolder {
 		}
 	}
 	
+	public static void setSession(HttpSession stack) {
+		if (stack == null) {
+			cleanSession();
+		}else {
+			standardSessionHolder.set(stack);
+		}
+	}
+	
 	public static void setRequest(HttpServletRequest stack) {
 		if (stack == null) {
 			cleanRequest();
@@ -68,14 +83,10 @@ public abstract class ContextHolder {
 	}
 
 
-	public static DistributedSession getSession() throws IllegalStateException {
-		DistributedSession stack = currentSession();
+	public static HttpSession getSession() throws IllegalStateException {
+		HttpSession stack = currentSession();
 		if (stack == null) {
-			throw new IllegalStateException("No thread-bound DistributedSession found: " +
-					"Are you referring to DistributedSession outside of an actual web request, " +
-					"or processing a request outside of the originally receiving thread? " +
-					"If you are actually operating within a web request and still receive this message, " +
-					"your code is probably running outside of DispatcherServlet and DistributedSessionChainToInterceptor.");
+			throw new IllegalStateException("No thread-bound StardardSession.");
 		}
 		return stack;
 	}

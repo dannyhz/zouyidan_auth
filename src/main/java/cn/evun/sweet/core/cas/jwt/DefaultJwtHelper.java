@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Created by xiang on 2017/8/1.
  */
-@Component
+//@Component
 public class DefaultJwtHelper implements JwtHelper {
 
     private static final String TOKEN_KEY = "loginToken";
@@ -34,14 +34,14 @@ public class DefaultJwtHelper implements JwtHelper {
     /*For token encryption and decryption*/
     private String secretKey;
 
-    @Autowired
+    //@Autowired
     public DefaultJwtHelper(JwtBuilder jwtBuilder, JwtParser jwtParser, SSOConfig conf) {
         this.jwtBuilder = jwtBuilder;
         this.jwtParser = jwtParser;
         this.secretKey = conf.LOGIN_SECRETKEY;//加密body内容的密钥
     }
 
-    @Override
+    //@Override
     public String build(Token token) {
         try {
             Map<String, Object> claims = new HashMap<String, Object>();

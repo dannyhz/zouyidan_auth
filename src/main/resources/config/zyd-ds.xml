@@ -53,4 +53,20 @@
 	        </value>
 	    </property>
 	</bean>
+	
+	<!-- 直接在代码中注入后使用sqlSession操作 -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+  		<constructor-arg index="0" ref="masterSqlSessionFactory" />
+	</bean>
+	
+	<!-- 
+		直接在代码中使用sqlSession（支持批量） 例如：
+		for (User user : users) {
+     		sqlSessionBatch.insert("org.mybatis.spring.sample.mapper.UserMapper.insertUser", user);
+   		}
+	-->
+	<bean id="sqlSessionBatch" class="org.mybatis.spring.SqlSessionTemplate">
+  		<constructor-arg index="0" ref="masterSqlSessionFactory" />
+  		<constructor-arg index="1" value="BATCH" />
+	</bean>
 </beans>
