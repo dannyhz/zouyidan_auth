@@ -46,6 +46,7 @@ import cn.evun.sweet.core.common.R;
 import cn.evun.sweet.core.exception.ValidateException;
 import cn.evun.sweet.core.mybatis.page.Page;
 import cn.evun.sweet.core.mybatis.page.PageDTO;
+import cn.evun.sweet.core.mybatis.page.PageHelper;
 import cn.evun.sweet.core.validation.ValidateStep;
 
 /**   
@@ -58,7 +59,7 @@ import cn.evun.sweet.core.validation.ValidateStep;
 public class AuthController {
 	
 	//@Resource
-	private GeneralObjectAccessService generalObjectAccessService;
+	//private GeneralObjectAccessService generalObjectAccessService;
 	
 	@Resource
 	private AuthService authService;
@@ -79,7 +80,7 @@ public class AuthController {
 		TenantDo tenant = new TenantDo();
 		BeanUtils.copyProperties(param, tenant);
 		tenant.setTenantIsdel(false);
-		
+		PageHelper.startPage(1, 2);
 		List<TenantDo> list = authService.getTenantMapper().select(new TenantDo());
 		//Page<TenantDo> list = (Page<TenantDo>)generalObjectAccessService.query(tenant, pageNum, pageSize);
 		PageDTO pagebar = new PageDTO();
@@ -230,7 +231,8 @@ public class AuthController {
 		org.setOrgParentId(param.getOrgParentId());
 		org.setOrgTenantId(UserContext.getTenantId());
 		org.setOrgIsdel(false);
-		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, generalObjectAccessService.query(org));
+		List<OrgDo> orgDoList = authService.getOrgMapper().select(org);
+		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, orgDoList);
 		return result;
 	}
 	
@@ -271,9 +273,13 @@ public class AuthController {
 	 * @param orgId 
 	 */
 	@RequestMapping(value="/auth/org", method=RequestMethod.GET)
-	public JsonResultDO orgGet(@RequestParam("orgId")Integer orgId){
-		JsonResultDO result = new JsonResultDO();	
-		OrgDo org = generalObjectAccessService.queryById(OrgDo.class, orgId);
+	public JsonResultDO orgGet(@RequestParam("orgId")Long orgId){
+		JsonResultDO result = new JsonResultDO();
+		OrgDo orgDo = new OrgDo();
+		if(orgId != null){
+			orgDo.setOrgId(orgId);
+		}
+		OrgDo org = authService.getOrgMapper().selectOne(orgDo);
 		if(!org.getOrgIsdel() && org.getOrgTenantId().longValue() == UserContext.getTenantId().longValue()){
 			result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, org);
 		}		
@@ -376,7 +382,8 @@ public class AuthController {
 			post.setPostOrgId(orgId);
 		}
 		post.setPostIsdel(false);
-		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, generalObjectAccessService.query(post));
+		List<PostDo> postList = authService.getPostMapper().select(post);
+		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, postList);
 		return result; 
 	}
 	
@@ -428,7 +435,8 @@ public class AuthController {
 		JsonResultDO result = new JsonResultDO();
 		PostPckMapDo ppm = new PostPckMapDo();
 		ppm.setPostId(postId);			
-		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY,  generalObjectAccessService.queryWithRelation(ppm));
+		List<PostPckMapDo> postPckDoList = authService.getPostPckMapMapper().select(ppm);
+		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY,  postPckDoList);
 		return result; 
 	}
 		
@@ -452,7 +460,8 @@ public class AuthController {
 		BeanUtils.copyProperties(param, user, "userSign");
 		user.setUserTenantId(UserContext.getTenantId());
 		user.setUserIsdel(false);
-		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, generalObjectAccessService.query(user));		
+		List<UserDo> userList = authService.getUserMapper().select(user);
+		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, userList);		
 		//TODO 屏蔽用户密码等敏感信息
 		return result; 
 	}
@@ -463,11 +472,13 @@ public class AuthController {
 	 * @param userId 
 	 */
 	@RequestMapping(value="/auth/user", method=RequestMethod.GET)
-	public JsonResultDO userGet(@RequestParam("userId")Integer userId){
+	public JsonResultDO userGet(@RequestParam("userId")Long userId){
 		JsonResultDO result = new JsonResultDO();	
-		UserDo user = generalObjectAccessService.queryById(UserDo.class, userId);
-		if(!user.getUserIsdel()){
-			result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, user);
+		UserDo user = new UserDo();
+		user.setUserId(userId);
+		UserDo queryUser = authService.getUserMapper().selectOne(user);
+		if(!queryUser.getUserIsdel()){
+			result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, queryUser);
 		}		
 		return result;
 	}
@@ -804,7 +815,8 @@ public class AuthController {
 		JsonResultDO result = new JsonResultDO();
 		ItemDo item = new ItemDo();
 		BeanUtils.copyProperties(param, item);
-		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, generalObjectAccessService.query(item));
+		List<ItemDo> itemList = authService.getItemMapper().select(item);
+		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, itemList);
 		return result;
 	}
 	
@@ -880,7 +892,8 @@ public class AuthController {
 		ItemPckDo pck = new ItemPckDo();
 		pck.setPckName(param.getPckName());
 		pck.setPckTenantId(UserContext.getTenantId());
-		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, generalObjectAccessService.query(pck));
+		List<ItemPckDo> itemPckList = authService.getItemPckMapper().select(pck);
+		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, itemPckList);
 		return result;
 	}
 	
@@ -942,7 +955,8 @@ public class AuthController {
 		JsonResultDO result = new JsonResultDO();
 		UserPckMapDo upm = new UserPckMapDo();
 		upm.setPckId(pckId);
-		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY,  generalObjectAccessService.queryWithRelation(upm));
+		List userPckList = authService.getUserPckMapMapper().select(upm);
+		result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY,  userPckList);
 		return result; 
 	}
 	

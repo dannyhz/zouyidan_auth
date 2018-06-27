@@ -6,15 +6,61 @@ public class UserDO {
 	
 	private Long userId;
 	
-	Long loanApplicatiionId;
-	String phoneCheckRecordNo;
-	String status;
-	String memo;
-	Date createdAt;
-	String createdBy;
-	Date lastUpdatedAt;
-	String lastUpdatedBy;
+	private String userLoginCode;
+	private String userName;
+	private String password;
+	private String status;
+	private String memo;
+	private Long roleId;
+	private String birthDate;
+	private String phone;
+	private Date createdAt;
+	private String createdBy;
+	private Date lastUpdatedAt;
+	private String lastUpdatedBy;
 	
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	public String getUserLoginCode() {
+		return userLoginCode;
+	}
+	public void setUserLoginCode(String userLoginCode) {
+		this.userLoginCode = userLoginCode;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public Long getRoleId() {
+		return roleId;
+	}
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
+	public String getBirthDate() {
+		return birthDate;
+	}
+	public void setBirthDate(String birthDate) {
+		this.birthDate = birthDate;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 	public String getStatus() {
 		return status;
 	}
@@ -52,5 +98,4 @@ public class UserDO {
 		this.lastUpdatedBy = lastUpdatedBy;
 	}
 	
-
 }

@@ -8,7 +8,7 @@ import cn.evun.sweet.auth.model.MenuDo;
 import cn.evun.sweet.auth.model.UserDo;
 import cn.evun.sweet.core.cas.Token;
 
-public class UserOnlinePool {
+public class UserOnlinePool  {
 	
 	public static Map<String, UserDo> userOnlinePool = new HashMap<String, UserDo>();
 	

@@ -42,7 +42,6 @@ import cn.evun.sweet.core.mybatis.common.SqlMapper;
 @Controller
 public class LoginController extends LoginAndOutService {
 	
-	
 
 	@Resource(name="sqlSession")
 	private SqlSession sqlSession;

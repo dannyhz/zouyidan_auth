@@ -715,11 +715,11 @@ public class AuthService {
 		
 			
 			
-	    	PageHelper.startPage(1, 2);
-	    	MenuDo menuDo = new MenuDo();
-	    	List<MenuDo> menuDoList = this.menuMapper.select(menuDo);
-	    	
-			sortMenuBySerialNo(menuDoList);
+    	//PageHelper.startPage(1, 2);
+    	MenuDo menuDo = new MenuDo();
+    	List<MenuDo> menuDoList = this.menuMapper.select(menuDo);
+    	
+		sortMenuBySerialNo(menuDoList);
 		return (List<MenuDo>)menuDoList;
 	}
 	

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.1//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyd.dao.IUserDao">
+	
+	<insert id="insertUser" parameterType="com.zyd.model.UserDO">
+		insert into
+			sys_user(user_login_code, user_name, password, status, phone)
+		values(
+		    #{userLoginCode},          
+		    #{userName},
+		    #{password},
+		    #{status},
+		    #{phone}
+		)
+	</insert>
+	
+	<select id="queryUser" parameterType="com.zyd.model.UserDO" resultType="com.zyd.model.UserDO">
+		select 
+			user_login_code, user_name, password, status, phone 
+		from
+			sys_user 
+		<where>
+			<if test="phone != null and phone != ''">
+				and phone = #{phone}
+			</if>
+			<if test="userLoginCode != null and userLoginCode != ''">
+				and user_login_code = #{userLoginCode}
+			</if>
+			<if test="password != null and password != ''">
+				and password = #{password}
+			</if>
+		</where>
+		
+	</select>
+
+	
+</mapper>

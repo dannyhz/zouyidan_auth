@@ -9,7 +9,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.zyd.dto.LoanApplicationDTO;
 import com.zyd.model.LoanApplicationDO;
-import com.zyd.service.BaseService;
+import com.zyd.service.UserService;
 
 public class LoanApplicationDaoTest {
 	ApplicationContext act = null;
