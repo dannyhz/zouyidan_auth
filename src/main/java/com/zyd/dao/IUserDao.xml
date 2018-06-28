@@ -16,7 +16,7 @@
 	
 	<select id="queryUser" parameterType="com.zyd.model.UserDO" resultType="com.zyd.model.UserDO">
 		select 
-			user_login_code, user_name, password, status, phone 
+			user_id,user_login_code, user_name, password, status, phone 
 		from
 			sys_user 
 		<where>
