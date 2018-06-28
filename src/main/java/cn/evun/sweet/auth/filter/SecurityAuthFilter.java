@@ -2,6 +2,7 @@ package cn.evun.sweet.auth.filter;
 
 import java.io.IOException;
 
+import javax.annotation.Resource;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.zyd.cache.CacheManager;
 
 import cn.evun.sweet.auth.service.AuthService;
 import cn.evun.sweet.common.util.StringUtils;
@@ -42,6 +45,7 @@ public class SecurityAuthFilter extends OncePerRequestFilter {
 	
 	private OnlineUserManager onlineUserManager;
 
+	private CacheManager cacheManager;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -52,7 +56,8 @@ public class SecurityAuthFilter extends OncePerRequestFilter {
 			try {
 				System.out.println("dfd"); 
 				
-				token = LoginCookieHelper.parseLoginToken(request);
+				//token = LoginCookieHelper.parseLoginToken(request);
+				String sessionId = LoginCookieHelper.getSessIdInLoginCookie(request);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -62,12 +67,20 @@ public class SecurityAuthFilter extends OncePerRequestFilter {
 			if(onlineUserManager == null){
 				onlineUserManager = SpringContext.getBean(OnlineUserManager.class);
 			}
-			if(onlineUserManager.isLoser(token)){ //被异地登陆时
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				return;
+			if(cacheManager == null){
+				cacheManager  = SpringContext.getBean(CacheManager.class);
 			}
+			//if(onlineUserManager.isLoser(token)){ //被异地登陆时
+			//	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			//	return;
+			//}
 			
 			HttpSession sess = request.getSession(false);
+			
+			if(cacheManager.retrieveOnlineUser(sess.getId()) == null){
+				response.sendRedirect(request.getContextPath() + SpringContext.getBean(SSOConfig.class).SESS_LOGINURL);
+			}
+			
 //			if(sess != null){//redis的put方法才能修改最后活跃时间
 //				Object data = CacheAccessor.doGet(R.cache.cache_region_session, sess.getId());
 //				if(data != null){
@@ -76,36 +89,36 @@ public class SecurityAuthFilter extends OncePerRequestFilter {
 //				ContextHolder.setSession((DistributedSession)sess);//绑定当前线程
 //			}
 			
-			if(isApp(request)){ //不需要进入后台权限管理的情况
-				if(noPasswordLoginServ == null){
-					noPasswordLoginServ = SpringContext.getBean(NoPasswordLoginHandler.class);//需要在实际业务中继承AbstractNoPasswordLoginService
-				}
-				if(noPasswordLoginServ != null && token != null && sess == null){
-					noPasswordLoginServ.creatNewSessWithCookie(token, request, response);//免密登陆
-				}else if(sess == null){
-					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-					return;
-				}
-			}else if(sess == null){//未登录或过期
-				if(isAjax(request)){
-					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				}else {
-					response.sendRedirect(request.getContextPath() + SpringContext.getBean(SSOConfig.class).SESS_LOGINURL);
-				}	
-				return;
-			}else {
-				if(authService == null){
-					authService = SpringContext.getBean(AuthService.class);
-				}
-				if(!authService.authCheck(request)){
-					if(isAjax(request)){
-						response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-					}else {
-						response.sendError(HttpServletResponse.SC_FORBIDDEN);
-					}
-					return;
-				}
-			}
+//			if(isApp(request)){ //不需要进入后台权限管理的情况
+//				if(noPasswordLoginServ == null){
+//					noPasswordLoginServ = SpringContext.getBean(NoPasswordLoginHandler.class);//需要在实际业务中继承AbstractNoPasswordLoginService
+//				}
+//				if(noPasswordLoginServ != null && token != null && sess == null){
+//					noPasswordLoginServ.creatNewSessWithCookie(token, request, response);//免密登陆
+//				}else if(sess == null){
+//					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//					return;
+//				}
+//			}else if(sess == null){//未登录或过期
+//				if(isAjax(request)){
+//					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//				}else {
+//					response.sendRedirect(request.getContextPath() + SpringContext.getBean(SSOConfig.class).SESS_LOGINURL);
+//				}	
+//				return;
+//			}else {
+//				if(authService == null){
+//					authService = SpringContext.getBean(AuthService.class);
+//				}
+//				if(!authService.authCheck(request)){
+//					if(isAjax(request)){
+//						response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+//					}else {
+//						response.sendError(HttpServletResponse.SC_FORBIDDEN);
+//					}
+//					return;
+//				}
+//			}
 		}
 		
 		filterChain.doFilter(request, response);

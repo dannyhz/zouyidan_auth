@@ -8,7 +8,7 @@ public interface CacheManager {
 	
 	public void storeOnlineUser(String id, UserDO userDO);
 	public UserDO retrieveOnlineUser(String id);
-	
+	public void clearOnlineUser(String id);
 	
 	public void storeVerifyCode(String id, String verifyCode);
 	public String retrieveVerifyCode(String id);

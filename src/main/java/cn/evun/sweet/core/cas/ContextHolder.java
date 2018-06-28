@@ -41,7 +41,9 @@ public abstract class ContextHolder {
 	public static void cleanToken() {
 		tokenHolder.remove();
 	}
-	
+	public static void cleanStandardSession(){
+		standardSessionHolder.remove();
+	}
 	public static void cleanSession() {
 		sessionHolder.remove();
 	}
@@ -68,7 +70,7 @@ public abstract class ContextHolder {
 	
 	public static void setSession(HttpSession stack) {
 		if (stack == null) {
-			cleanSession();
+			cleanStandardSession();
 		}else {
 			standardSessionHolder.set(stack);
 		}

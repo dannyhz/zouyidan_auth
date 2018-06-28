@@ -5,7 +5,9 @@ import java.io.IOException;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import cn.evun.sweet.core.cas.jwt.JwtHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zyd.cache.CacheManager;
+import com.zyd.cache.UserOnlinePool;
 import com.zyd.model.UserDO;
 import com.zyd.service.ComponentService;
 import com.zyd.service.UserService;
@@ -24,6 +27,9 @@ import cn.evun.sweet.common.util.VerifyCodeUtils;
 import cn.evun.sweet.common.util.network.NetUtils;
 import cn.evun.sweet.common.util.web.CookieHelper;
 import cn.evun.sweet.core.cache.CacheAccessor;
+import cn.evun.sweet.core.cas.ContextHolder;
+import cn.evun.sweet.core.cas.LoginCookieHelper;
+import cn.evun.sweet.core.cas.LoginToken;
 import cn.evun.sweet.core.cas.Token;
 import cn.evun.sweet.core.common.JsonResultDO;
 import cn.evun.sweet.core.common.R;
@@ -39,6 +45,9 @@ public class BizLoginController {
 	private CacheManager cacheManager;
 	@Resource
 	private ComponentService componentService;
+	//@Resource
+	//private JwtHelper jwtHelper;
+	
 	
 	  @ResponseBody
 	  @RequestMapping(value = "/biz/checkPhoneNo" , method = RequestMethod.GET)
@@ -104,27 +113,56 @@ public class BizLoginController {
 	  
 	  @ResponseBody
 	  @RequestMapping(value = "/biz/login", method = RequestMethod.POST)
-	    public JsonResultDO loginajax(HttpServletRequest request, HttpServletResponse response, 
-	    							String verifyCode, UserDO user) {
+	    public JsonResultDO loginajax(UserDO user,HttpServletRequest request, HttpServletResponse response, 
+	    							String verifyCode ) {
 	        JsonResultDO result = new JsonResultDO();
-	        if (!StringUtils.hasText(user.getPassword()) || !StringUtils.hasText(user.getPhone())) {
-	            throw new ValidateException("trans.login.error.noneinput", "请输入账号和密码");
+	        if (!StringUtils.hasText(user.getPassword()) || !StringUtils.hasText(user.getUserLoginCode())) {
+	            //throw new ValidateException("trans.login.error.noneinput", "请输入账号和密码");
+	        	result.setSuccess(false);
+	        	result.setMessage("请输入账号和密码");
+	        	return result;
 	        }
 
 	        if (!componentService.checkVerifyCode(request, verifyCode)) {
-	            throw new ValidateException("trans.login.error.verifycode", "验证码错误");
+	        	result.setSuccess(false);
+	        	result.setMessage("验证码错误");
+	        	return result;
 	        }      
-	        String errCode = checkLoginUser(user);//用户账户校验
-	        if (StringUtils.isEmpty(errCode)) {
-	            throw new ValidateException(errCode, "用户账户校验未通过");
+	        UserDO loginUser = checkLoginUser(user);//用户账户校验
+	        if (loginUser == null) {
+	            result.setSuccess(false);
+	        	result.setMessage("用户账户校验未通过");
+	        	return result;
+	        }
+	        
+	        if(loginUser.getPassword().equals(user.getPassword())){
+	        	/*验证通过后开始创建Session内容*/
+	    		LoginToken token = new LoginToken();
+	    		token.setUserIp(String.valueOf(request.getAttribute(R.request.mdc_ip)));//在filter中植入的ip地址信息
+	    		token.setUserId(String.valueOf(loginUser.getUserId()));//要求业务层必须有userId字段。
+	    		token.setSessionid(request.getSession(true).getId());//同时创建了session
+	    		token.setClientId(request.getHeader("AppClientId"));//手机端登录时通过请求头携带
+	    		try{
+	    			LoginCookieHelper.generateCookie(request, response, token);
+	    		}catch(Exception ex){
+	    			System.out.println("Failed to generate custom cookie[token.getUserId()]. ex.getMessage()");
+	    		}
+	    		//ContextHolder.setSession((DistributedSession)request.getSession(false));//绑定当前线程
+	    		HttpSession currentSession = request.getSession(false);
+	    		ContextHolder.setSession(currentSession);//绑定当前线程
+	        	
+	    		
+	    		//UserOnlinePool.tokenOnlinePool.put(currentSession.getId(), token);
+	    		cacheManager.storeOnlineUser(request.getSession(true).getId(), loginUser);
+	    		
+	        }else{
+	        	result.setSuccess(false);
+	        	result.setMessage("用户密码不正确");
+	        	return result;
 	        }
 	        
 	        /*验证都通过，开始创建JWT内容*/
-//	        Token token = new Token();
-//	        token.setUserIp(String.valueOf(request.getAttribute(R.request.mdc_ip)));//在filter中植入的ip地址信息
-//	        token.setUserId(String.valueOf(user.getUserId()));
-//	        token.setClientId(request.getHeader("AppClientId"));//手机端登录时通过请求头携带
-
+	       
 	        result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, "success");  
 	        result.setSuccess(true);
 	        result.setStatusCode("0");
@@ -138,16 +176,19 @@ public class BizLoginController {
 	     *
 	     * @param userParam 用户账户信息
 	     */
-	    private String checkLoginUser(UserDO userParam) {
+	    private UserDO checkLoginUser(UserDO userParam) {
 	        UserDO loginUser = userService.getUserByPhone(userParam.getPhone());
 	        if (loginUser == null) {//手机号码获取不到，用登录名获取
 	        	if(!StringUtils.isEmpty(userParam.getUserLoginCode())){
 	        		loginUser = userService.getUserByLoginUserCode(userParam.getUserLoginCode());
 	        	}
 	        }
-	        if(loginUser == null){
-	        	return "trans.login.error.notexist"; //账号不存在
+	        
+	        if(loginUser != null){
+	        	return loginUser;
 	        }
-	        return null;
+	        return null;// 验证 用户不存在 
 	    }
+	    
+	    
 }

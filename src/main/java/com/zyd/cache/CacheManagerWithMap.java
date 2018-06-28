@@ -13,7 +13,8 @@ import cn.evun.sweet.core.cas.Token;
 @Component
 public class CacheManagerWithMap implements CacheManager{
 	
-	public static Map<String, UserDo> userOnlinePool = new HashMap<String, UserDo>();
+	//public static Map<String, UserDo> userOnlinePool = new HashMap<String, UserDo>();
+	public static Map<String, UserDO> userOnlinePool = new HashMap<String, UserDO>();
 	public static Map<String, Token> tokenOnlinePool = new HashMap<String, Token>();
 	public static ThreadLocal<List<MenuDo>> currentUserMenu = new ThreadLocal<List<MenuDo>>();
 	public static ThreadLocal<List<MenuDo>> currentUserMenuUnvisible = new ThreadLocal<List<MenuDo>>();
@@ -22,14 +23,18 @@ public class CacheManagerWithMap implements CacheManager{
 	
 	@Override
 	public void storeOnlineUser(String id, UserDO userDO) {
-		// TODO Auto-generated method stub
-		
+		userOnlinePool.put(id, userDO);
 	}
 	@Override
 	public UserDO retrieveOnlineUser(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return userOnlinePool.get(id);
 	}
+	
+	@Override
+	public void clearOnlineUser(String id) {
+		userOnlinePool.remove(id);
+	}
+	
 	@Override
 	public void storeVerifyCode(String id, String verifyCode) {
 		verifyCodeMap.put(id, verifyCode);
