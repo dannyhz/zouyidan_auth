@@ -19,6 +19,14 @@ public class UserDO {
 	private Date lastUpdatedAt;
 	private String lastUpdatedBy;
 	
+	private String verifyCode;
+	
+	public String getVerifyCode() {
+		return verifyCode;
+	}
+	public void setVerifyCode(String verifyCode) {
+		this.verifyCode = verifyCode;
+	}
 	public Long getUserId() {
 		return userId;
 	}

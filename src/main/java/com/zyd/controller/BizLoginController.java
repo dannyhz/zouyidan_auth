@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -105,8 +106,7 @@ public class BizLoginController {
 	  
 	  @ResponseBody
 	  @RequestMapping(value = "/biz/login", method = RequestMethod.POST)
-	    public JsonResultDO loginajax(UserDO user,HttpServletRequest request, HttpServletResponse response, 
-	    							String verifyCode ) {
+	    public JsonResultDO loginajax(@RequestBody UserDO user,HttpServletRequest request, HttpServletResponse response) {
 	        JsonResultDO result = new JsonResultDO();
 	        if (!StringUtils.hasText(user.getPassword()) || !StringUtils.hasText(user.getUserLoginCode())) {
 	            //throw new ValidateException("trans.login.error.noneinput", "请输入账号和密码");
@@ -115,7 +115,7 @@ public class BizLoginController {
 	        	return result;
 	        }
 
-	        if (!componentService.checkVerifyCode(request, verifyCode)) {
+	        if (!componentService.checkVerifyCode(request, user.getVerifyCode())) {
 	        	result.setSuccess(false);
 	        	result.setMessage("验证码错误");
 	        	return result;

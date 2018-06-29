@@ -76,9 +76,10 @@ public class SecurityAuthFilter extends OncePerRequestFilter {
 			//}
 			
 			HttpSession sess = request.getSession(false);
-			
-			if(cacheManager.retrieveOnlineUser(sess.getId()) == null){
-				response.sendRedirect(request.getContextPath() + SpringContext.getBean(SSOConfig.class).SESS_LOGINURL);
+			if(sess != null){
+				if(cacheManager.retrieveOnlineUser(sess.getId()) == null){
+					response.sendRedirect(request.getContextPath() + SpringContext.getBean(SSOConfig.class).SESS_LOGINURL);
+				}
 			}
 			
 //			if(sess != null){//redis的put方法才能修改最后活跃时间
