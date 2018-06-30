@@ -153,8 +153,6 @@ public class BizLoginController {
 	        	return result;
 	        }
 	        
-	        /*验证都通过，开始创建JWT内容*/
-	       
 	        result.addAttribute(JsonResultDO.RETURN_OBJECT_KEY, "success");  
 	        result.setSuccess(true);
 	        result.setStatusCode("0");

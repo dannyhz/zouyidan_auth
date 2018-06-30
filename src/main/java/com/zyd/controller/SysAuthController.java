@@ -4,31 +4,32 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zyd.common.JsonResultDO;
 import com.zyd.dto.AuthDTO;
-import com.zyd.model.auth.SysAuth;
-import com.zyd.service.TestAuthService;
+import com.zyd.service.SysAuthService;
+
+import cn.evun.sweet.core.common.JsonResultDO;
 
 @RestController
-@RequestMapping("/testauth/*")
-public class TestAuthController {
+public class SysAuthController {
 	
 	@Resource
-	private TestAuthService testAuthService;
+	private SysAuthService sysAuthService;
 	
 	 
-	 @RequestMapping("add")
+	 @RequestMapping("/sysauth/add")
 	 public JsonResultDO addRoleAuth(AuthDTO authDTO) {
 		 
 		 System.out.println(authDTO.getRoleId());
 		 JsonResultDO rslt = new JsonResultDO();
-		 rslt.setData(authDTO.getSysAuthContent());
-		 List<SysAuth> sysAuthList = rslt.parseDataList(SysAuth.class);
-		 testAuthService.createRoleMenuAuth(sysAuthList);
+		 
 		 
 		 return rslt; 
 	 }
+	 
+	 
 }

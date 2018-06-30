@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.1//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyd.dao.IProductDao">
+	
+	<insert id="insertProduct" parameterType="com.zyd.model.ProductDO">
+		insert into
+			b_product(
+				product_code,product_name,product_type,status,
+				city_id,province_id,max_loan_amt,min_loan_amt,is_channel_proxy,channel_id,
+				interest_rate,min_loan_period,max_loan_period,manager_fee_amt,manager_fee_rate,
+				product_loanee_desc,product_usage_desc,product_desc,
+				created_at)
+		values(
+		    #{productCode},          
+		    #{productName},
+		    #{productType},
+		    #{status},
+		    
+		    #{cityId},
+		    #{provinceId},
+		    #{maxLoanAmt},
+		    #{minLoanAmt},
+		    #{isChannelProxy},
+		    #{channelId},
+		    
+		    #{interestRate},
+		    #{minLoanPeriod},
+		    #{maxLoanPeriod},
+		    #{managerFeeAmt},
+		    #{managerFeeRate},
+		    
+		    #{productLoaneeDesc},
+		    #{productUsageDesc},
+		    #{productDesc},
+		    current_time
+		)
+	</insert>
+	
+	<update id="updateProduct" parameterType="com.zyd.model.ProductDO">
+		update b_product 
+				set status = #{status},
+				publish_time = current_time,
+				last_updated_at = current_time
+		where 
+			product_id = #{productId} 
+		
+	</update>
+	
+	<select id="queryProduct" parameterType="com.zyd.model.ProductDO" resultType="com.zyd.model.ProductDO">
+		select 
+				product_id,	product_code, product_name, product_type, status,
+				city_id, province_id, max_loan_amt, min_loan_amt, is_channel_proxy, 
+				channel_id,	interest_rate, min_loan_period, max_loan_period, manager_fee_amt,
+				manager_fee_rate, product_loanee_desc, product_usage_desc, product_desc, created_at
+		from
+			b_product 
+		<where>
+			<if test="productId != null and productId != ''">
+				and product_id = #{productId}
+			</if>
+			
+		</where>
+		
+	</select>
+	
+</mapper>

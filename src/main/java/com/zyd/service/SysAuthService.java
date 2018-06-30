@@ -11,7 +11,7 @@ import com.zyd.model.auth.SysAuth;
 import com.zyd.model.auth.SysRole;
 
 @Component
-public class TestAuthService {
+public class SysAuthService {
 	
 	@Resource
 	private ISysAuthDao authDao;
