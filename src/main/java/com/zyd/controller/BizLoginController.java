@@ -58,16 +58,6 @@ public class BizLoginController {
 		  return result;
 	  }	
 	
-//	  @ResponseBody
-//	  @RequestMapping("/biz/namepass.do") 
-//	  public String login(HttpServletRequest request){ 
-//	    String name = request.getParameter("name"); 
-//	    String pass = request.getParameter("pass");
-//	    System.out.println("name = " + name);
-//	    return name;
-//	  } 
-	  
-	  
 	  //---------------------
 	  @RequestMapping(value="/biz/reqVerifyCode", method=RequestMethod.GET)
 	  public void verifyCode(HttpServletRequest request, HttpServletResponse response){
@@ -161,7 +151,7 @@ public class BizLoginController {
 	        return result;
 	    }
 	  
-	  /**
+	  	/**
 	     * 用户账户校验
 	     *
 	     * @param userParam 用户账户信息
